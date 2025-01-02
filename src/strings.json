@@ -1,0 +1,14 @@
+{
+    "en": {
+        "welcomeTitle": "Welcome to My Portfolio",
+        "welcomeDescription": "Discover amazing content and more!",
+        "scrollButton": "Scroll Down",
+        "portfolioTitle": "My Portfolio"
+    },
+    "vn": {
+        "welcomeTitle": "Chào mừng đến với Hồ sơ của tôi",
+        "welcomeDescription": "Khám phá nội dung thú vị và hơn thế nữa!",
+        "scrollButton": "Cuộn xuống",
+        "portfolioTitle": "Danh mục của tôi"
+    }
+}
