@@ -25,7 +25,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         titleManager.resetText();
         descriptionManager.resetText();
         titleManager.animateText(strings[language].welcomeTitle, 'typeWriter', { speed: 100 });
-        descriptionManager.animateText(strings[language].welcomeDescription, 'fadeIn', { duration: 1 });
+        //short delay and call function to animate description
+        setTimeout(() => {
+            descriptionManager.animateText(strings[language].welcomeDescription, 'fadeIn', { duration: 1 });
+        }, 2800);
         scrollButton.textContent = strings[language].scrollButton;
         portfolioTitle.textContent = strings[language].portfolioTitle;
     }
@@ -65,6 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Control Manager
+    // Control Manager
     class ControlManager {
         constructor() {
             this.currentArea = 'room';
@@ -79,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             this.scrollIndex = 0;
             this.scrollTarget = 0;
             camera2.position.y = 0;
+            document.querySelector('body').style.overflow = 'hidden'; // Disable body scrolling
             document.querySelector('.portfolio-area').scrollIntoView({ behavior: 'smooth' });
             setTimeout(() => {
                 this.currentArea = 'portfolio';
@@ -88,6 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         switchToRoom() {
             this.inTransition = true;
+            document.querySelector('body').style.overflow = ''; // Re-enable body scrolling
             document.querySelector('.background-container').scrollIntoView({ behavior: 'smooth' });
             setTimeout(() => {
                 this.currentArea = 'room';
@@ -96,19 +102,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         handleScroll(event) {
-            event.preventDefault();
+            event.preventDefault(); // Completely block default scroll behavior
 
             if (this.inTransition) return;
 
             if (this.currentArea === 'room' && event.deltaY > 0) {
                 this.switchToPortfolio();
             } else if (this.currentArea === 'portfolio') {
-                if (event.deltaY > 0) {
+                const scrollSensitivity = 0.1; // Slow down scroll
+
+                if (event.deltaY * scrollSensitivity > 1) {
                     if (this.scrollIndex < items.length - 1) {
                         this.scrollIndex++;
                         this.scrollTarget = -this.scrollIndex * this.scrollThreshold;
                     }
-                } else if (event.deltaY < 0) {
+                } else if (event.deltaY * scrollSensitivity < -1) {
                     if (this.scrollIndex > 0) {
                         this.scrollIndex--;
                         this.scrollTarget = -this.scrollIndex * this.scrollThreshold;
@@ -119,7 +127,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     }
-
     const controlManager = new ControlManager();
 
     // Area 1: GLTF Model Scene

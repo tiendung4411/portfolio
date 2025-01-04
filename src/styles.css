@@ -39,8 +39,8 @@ body {
 
 .h1-container {
 
-    width: 500px;
-    /* set the border */
+    width: 310px;
+
     /* border: 1px solid #000; */
 
 }
@@ -49,7 +49,17 @@ body {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     color: #333;
-
+    line-height: 1.2;
+    /* Adjust line height */
+    min-height: calc(2.5rem * 1.2 * 2);
+    /* Reserve space for 2 lines */
+    white-space: pre-wrap;
+    /* Preserve spaces and line breaks */
+    word-wrap: break-word;
+    /* Allow text wrapping */
+    overflow-wrap: break-word;
+    text-align: left;
+    /* Ensure alignment is consistent */
 }
 
 .text-container p {
@@ -59,6 +69,11 @@ body {
     opacity: 0;
     /* Start with elements invisible */
 
+    /* Smooth fade-in effect */
+    height: 1.2em;
+    /* Reserve space for one line of text */
+    overflow: hidden;
+    /* Prevent any content from spilling out */
 }
 
 .text-container button {
@@ -108,6 +123,8 @@ body {
     font-size: 3rem;
     z-index: 10;
 }
+
+
 
 /* Three.js containers for background and portfolio areas */
 #threejs-background,
