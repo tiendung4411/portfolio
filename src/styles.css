@@ -2,7 +2,7 @@
 body {
     margin: 0;
     overflow-x: hidden;
-    font-family: Arial, sans-serif;
+    font-family: 'Montserrat', Arial, sans-serif;
 }
 
 /* Area 1: Background container */
@@ -207,7 +207,7 @@ body {
     position: relative;
     width: 100%;
     height: 100vh;
-    background: #000000;
+    background: #ffffff;
     /* Black background */
     color: #ffffff;
     /* White text */
@@ -234,6 +234,8 @@ body {
     width: 100%;
     height: 100%;
     z-index: 0;
+    background: #ffffff;
+    background: transparent;
     /* Ensure it is behind other content */
 }
 
@@ -354,4 +356,80 @@ body {
         transform: translateY(-100%);
         /* Slide completely out of view to the top */
     }
+}
+
+
+
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    /* Semi-transparent black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    /* Ensure it's above everything else */
+}
+
+#lottie-animation {
+    width: 200px;
+    height: 200px;
+    /* Adjust size as needed */
+}
+
+
+/* Scroll-up icon styling */
+/* Scroll-up icon container styling */
+.scroll-up-icon {
+    position: absolute;
+    bottom: 20px;
+    /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    /* Ensure it's above other elements */
+    width: 50px;
+    /* Diameter of the circle */
+    height: 50px;
+    /* Diameter of the circle */
+    background-color: rgba(255, 255, 255, 0.4);
+    /* Light black with 10% opacity */
+    /* border: 2px solid rgba(0, 0, 0, 0.3); */
+    /* Border with slight opacity */
+    border-radius: 50%;
+    /* Make it circular */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    /* Indicate it's clickable */
+    transition: opacity 0.3s, transform 0.3s, background-color 0.3s;
+}
+
+/* Arrow styling */
+.scroll-up-icon span {
+    font-size: 2rem;
+    /* Size of the arrow */
+    color: rgba(0, 0, 0, 0.5);
+    /* Arrow color with 50% opacity */
+    transition: color 0.3s;
+}
+
+/* Hover effects */
+.scroll-up-icon:hover {
+    opacity: 1;
+    /* Full opacity on hover */
+    transform: translateX(-50%) translateY(-5px);
+    /* Slight upward movement */
+    background-color: rgba(0, 0, 0, 0.2);
+    /* Slightly darker background on hover */
+}
+
+.scroll-up-icon:hover span {
+    color: rgba(0, 0, 0, 0.8);
+    /* Darker arrow color on hover */
 }

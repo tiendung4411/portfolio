@@ -1,12 +1,14 @@
 {
     "en": {
         "welcomeTitle": "Hi, My name is Kim Toan",
+        "welcomeTitleIcon": "assets/icons/wave-hand.png",
         "welcomeDescription": "Discover amazing content and more!",
         "scrollButton": "Have a tour",
         "portfolioTitle": "My Portfolio"
     },
     "vn": {
         "welcomeTitle": "Xin chào, Tôi là Kim Toàn",
+        "welcomeTitleIcon": "assets/icons/wave-hand.png",
         "welcomeDescription": "Khám phá nội dung thú vị và hơn thế nữa!",
         "scrollButton": "Khám phá ngay",
         "portfolioTitle": "Danh mục của tôi"

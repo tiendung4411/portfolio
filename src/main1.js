@@ -4,6 +4,16 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import TextManager from './text_manager.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const loadingAnimation = lottie.loadAnimation({
+        container: document.getElementById('lottie-animation'),
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: './assets/loading.json', // Path to your Lottie file
+    });
+    const loadingScreen = document.getElementById('loading-screen');
+    loadingScreen.style.display = 'flex'; // Make sure it's visible
+
     console.log("DOM fully loaded and parsed");
 
     const response = await fetch('src/strings.json');
@@ -16,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const descriptionElement = document.querySelector('.text-container p');
     const scrollButton = document.querySelector('#scroll-button');
     const portfolioTitle = document.querySelector('.portfolio-area h1');
+    let isAnimating = false; // Flag to track animation state
 
     // Initialize TextManager for title and description
     const titleManager = new TextManager(titleElement);
@@ -24,25 +35,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     scrollButton.textContent = strings[currentLanguage].scrollButton;
 
     async function updateTextContent(language) {
+        if (isAnimating) return; // Prevent multiple toggles during animation
+
+        isAnimating = true; // Block new animations until this completes
+
         titleManager.resetText();
         descriptionManager.resetText();
-        scrollButton.classList.remove('visible'); // Ensure the button is hidden
+
+        scrollButton.classList.remove('visible'); // Hide the button
+        scrollButton.textContent = strings[language].scrollButton;
         scrollButton.classList.add('hidden');
 
-        titleManager.animateText(strings[language].welcomeTitle, 'typeWriter', { speed: 100 });
+        // Start title animation
+        titleManager.animateText(strings[language].welcomeTitle, 'typeWriter', { speed: 100, icon: strings[language].welcomeTitleIcon });
 
+        // Start description animation after title animation
         setTimeout(() => {
             descriptionManager.animateText(strings[language].welcomeDescription, 'fadeIn', { duration: 1 });
 
-            // Show the button after animations
+            // Show the button after description animation
             setTimeout(() => {
                 scrollButton.classList.remove('hidden');
                 scrollButton.classList.add('visible');
+
+                isAnimating = false; // Animation is complete; allow toggling again
             }, 1000); // Match the description animation duration
-        }, 2800); // Delay to match title animation duration
+        }, 2800); // Delay to match the title animation duration
     }
 
-    updateTextContent(currentLanguage);
+    // updateTextContent(currentLanguage);
 
     const languageToggleButton = document.createElement('div');
     languageToggleButton.style.position = 'fixed';
@@ -151,13 +172,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderer1.setPixelRatio(window.devicePixelRatio);
     document.querySelector('.threejs-container').appendChild(renderer1.domElement);
 
-    const ambientLight1 = new THREE.AmbientLight(0xffffff, 2.5);
+    const ambientLight1 = new THREE.AmbientLight(0xffffff, 2);
     scene1.add(ambientLight1);
 
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
     hemisphereLight.position.set(0, 10, 0);
     scene1.add(hemisphereLight);
 
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let isLightOn = true; // Flag to track the light's state
+    let floorLampLight;
+    // Enable shadow maps in the renderer
+    renderer1.shadowMap.enabled = true;
+    renderer1.shadowMap.type = THREE.PCFSoftShadowMap; // Soft shadows
     const loader = new GLTFLoader();
     loader.load(
         'assets/background.glb',
@@ -165,20 +193,114 @@ document.addEventListener('DOMContentLoaded', async () => {
             const model = gltf.scene;
             model.position.set(-6.2, -1, -1);
             model.scale.set(1.5, 1.5, 1.5);
+
+            // Traverse the model to configure shadows
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    if (child.name === 'Chair-15' || child.name === 'face_chair') {
+                        child.castShadow = true; // Enable shadow casting for specific objects
+                    } else {
+                        child.castShadow = false; // Disable shadow casting for all other objects
+                    }
+                    child.receiveShadow = true; // Allow all objects to receive shadows
+                }
+            });
+
+            // Locate Floor_Lamp
+            const floorLamp = model.getObjectByName('Floor_Lamp');
+            if (floorLamp) {
+                console.log('Floor_Lamp found:', floorLamp.position);
+
+                // Create a light source near the Floor Lamp
+                floorLampLight = new THREE.PointLight(0xf18203, 25, 10);
+                floorLampLight.position.set(
+                    floorLamp.position.x - 4.55,
+                    floorLamp.position.y + 2,
+                    floorLamp.position.z
+                );
+                floorLampLight.castShadow = true;
+                floorLampLight.shadow.mapSize.width = 1024;
+                floorLampLight.shadow.mapSize.height = 1024;
+
+                scene1.add(floorLampLight);
+
+                // Create a transparent sphere to represent the light source
+                const sphereGeometry = new THREE.SphereGeometry(0.5, 16, 16); // Adjust size as needed
+                const sphereMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xff0000, // Red for debugging
+                    transparent: true,
+                    opacity: 0, // Make it invisible
+                });
+                const lightSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                lightSphere.position.copy(floorLampLight.position);
+                lightSphere.name = 'LightSource'; // Give it a name for raycasting
+                scene1.add(lightSphere);
+
+                // Optional: Add a light helper for debugging
+                // const lightHelper = new THREE.PointLightHelper(floorLampLight, 0.5);
+                // scene1.add(lightHelper);
+            } else {
+                console.warn('Floor_Lamp not found in the model.');
+            }
+
+            // Add the model to the scene
             scene1.add(model);
+
+            // Hide the loading screen after a short delay
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                updateTextContent(currentLanguage);
+            }, 500);
         },
         undefined,
         (error) => console.error('Error loading model:', error)
     );
+
+    // Event listener for mouse clicks
+    window.addEventListener('pointerdown', (event) => {
+        // Convert mouse position to normalized device coordinates
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        const lightSwitchSound = new Audio('assets/audio/light_switch.mp3');
+        // Update the raycaster with the camera and mouse position
+        raycaster.setFromCamera(mouse, camera1);
+
+        // Check for intersections with the scene objects
+        const intersects = raycaster.intersectObjects(scene1.children, true);
+        if (intersects.length > 0) {
+            const clickedObject = intersects[0].object;
+            console.log('Intersected:', clickedObject.name);
+
+            // Check if the light sphere was clicked
+            if (clickedObject.name === 'LightSource') {
+                console.log('Light Source clicked!');
+                lightSwitchSound.play().catch((err) => console.log('Audio play error:', err));
+                // Toggle the light
+                if (floorLampLight) {
+                    isLightOn = !isLightOn; // Toggle the flag
+                    floorLampLight.intensity = isLightOn ? 25 : 0; // Turn light on or off
+                    console.log(`Light is now ${isLightOn ? 'ON' : 'OFF'}`);
+                }
+            }
+        }
+    });
+
+
 
     function animateScene1() {
         requestAnimationFrame(animateScene1);
         renderer1.render(scene1, camera1);
     }
     animateScene1();
+    //add a click event listener to the Floor_Lamp
 
     // Area 2: Portfolio Section
     const scene2 = new THREE.Scene();
+    //set the background = sea.png
+    const texture = new THREE.TextureLoader().load('assets/black.jpg');
+    //set the colorSpace
+    // texture.colorSpace = THREE.SRGBColorSpace;
+    // scene2.background = texture;
     const camera2 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera2.position.z = 8;
 
@@ -187,54 +309,84 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderer2.setPixelRatio(window.devicePixelRatio);
     document.querySelector('#threejs-portfolio').appendChild(renderer2.domElement);
 
-    const items = [];
+
     const textureLoader = new THREE.TextureLoader();
     const itemData = [
-        { img: 'assets/project1.png', name: 'Project 1' },
-        { img: 'assets/project2.png', name: 'Project 2' },
-        { img: 'assets/project3.png', name: 'Project 3' },
-        { img: 'assets/project4.png', name: 'Project 4' },
+        { img: 'assets/items/project1.png', name: 'Project 1' },
+        { img: 'assets/items/project2.png', name: 'Project 2' },
+        { img: 'assets/items/project3.png', name: 'Project 3' },
+        { img: 'assets/items/project4.png', name: 'Project 4' },
+        { img: 'assets/items/project5.png', name: 'Project 5' },
+        { img: 'assets/items/project6.png', name: 'Project 6' },
+        { img: 'assets/items/project7.png', name: 'Project 7' },
+        { img: 'assets/items/project8.png', name: 'Project 8' },
+        { img: 'assets/items/project9.png', name: 'Project 9' },
+        { img: 'assets/items/project10.png', name: 'Project 10' },
+        { img: 'assets/items/project11.png', name: 'Project 11' },
+        { img: 'assets/items/project12.png', name: 'Project 12' },
+        { img: 'assets/items/project13.png', name: 'Project 13' },
+        { img: 'assets/items/project14.png', name: 'Project 14' },
+        { img: 'assets/items/project15.png', name: 'Project 15' },
+
     ];
 
+    const items = new Array(itemData.length); // Create a fixed-size array for proper indexing
     itemData.forEach((data, index) => {
-        textureLoader.load(data.img, (texture) => {
-            texture.colorSpace = THREE.SRGBColorSpace;
-            const aspectRatio = texture.image.width / texture.image.height;
-            const geometry = new THREE.PlaneGeometry(10 * aspectRatio, 10);
-            const material = new THREE.MeshBasicMaterial({ map: texture });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.y = -index * 12;
-            items.push(mesh);
-            scene2.add(mesh);
-        });
+        textureLoader.load(
+            data.img,
+            (texture) => {
+                texture.colorSpace = THREE.SRGBColorSpace;
+                const aspectRatio = texture.image.width / texture.image.height;
+                const geometry = new THREE.PlaneGeometry(10 * aspectRatio, 10);
+                const material = new THREE.MeshBasicMaterial({ map: texture });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.y = -index * 12;
+
+                items[index] = mesh; // Ensure the correct order
+                scene2.add(mesh);
+            },
+            undefined,
+            (error) => {
+                console.error(`Error loading texture for ${data.name}:`, error);
+            }
+        );
     });
 
     function animateScene2() {
         requestAnimationFrame(animateScene2);
 
+        // Epsilon for snapping precision
+        const epsilon = 0.01;
+
         items.forEach((item, index) => {
+            // Calculate the target position
             const targetY = -index * 12 + (controlManager.scrollTarget - camera2.position.y);
 
             const isActive = controlManager.scrollIndex === index;
 
-            // Smooth positioning
+            // Smoothly approach target position
             item.position.y += (targetY - item.position.y) * 0.1;
 
-            // Determine target rotation based on index (alternating directions)
-            const targetRotation = index % 2 === 0 ? -0.2 : 0.2; // Odd items rotate left, even items rotate right
+            // Snap to the exact position if close enough
+            if (Math.abs(targetY - item.position.y) < epsilon) {
+                item.position.y = targetY;
+            }
 
-            // Subtle rotation for active items
+            // Determine rotation for active and inactive items
+            const targetRotation = index % 2 === 0 ? -0.1 : 0.1; // Alternate rotation
             if (isActive) {
+                // Smooth rotation for active item
                 if (Math.abs(item.rotation.y - targetRotation) > 0.005) {
-                    item.rotation.y += (targetRotation - item.rotation.y) * 0.1; // Smoothly approach target rotation
+                    item.rotation.y += (targetRotation - item.rotation.y) * 0.1;
                 }
             } else {
+                // Reset rotation for inactive items
                 if (Math.abs(item.rotation.y) > 0.005) {
-                    item.rotation.y += (0 - item.rotation.y) * 0.1; // Reset rotation smoothly toward 0
+                    item.rotation.y += (0 - item.rotation.y) * 0.1;
                 }
             }
 
-            // Scaling for active item
+            // Smooth scaling for active item
             const targetScale = isActive ? 1.2 : 0.9;
             item.scale.setScalar(item.scale.x + (targetScale - item.scale.x) * 0.1);
 
@@ -242,6 +394,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             item.material.color.setScalar(isActive ? 1 : 0.6);
         });
 
+        // Smoothly move the camera position
         camera2.position.y += (controlManager.scrollTarget - camera2.position.y) * 0.1;
 
         renderer2.render(scene2, camera2);

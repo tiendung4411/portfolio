@@ -10,7 +10,7 @@ class TextManager {
 
     resetText() {
         this.stopAnimation(); // Stop any ongoing animation
-        this.element.textContent = ''; // Clear the text
+        this.element.innerHTML = ''; // Clear the text (use innerHTML for icons)
         this.typingSound.pause(); // Stop sound if it's playing
         this.typingSound.currentTime = 0; // Reset sound to the beginning
         this.currentText = ''; // Reset current text
@@ -27,14 +27,16 @@ class TextManager {
         this.resetText(); // Ensure a clean slate
         this.currentText = text; // Set the current text to be animated
 
+        const { speed = 50, duration = 1, icon = null } = options;
+
         if (type === 'typeWriter') {
-            this.typeWriterAnimation(text, options.speed || 50);
+            this.typeWriterAnimation(text, speed, icon);
         } else if (type === 'fadeIn') {
-            this.fadeInAnimation(text, options.duration || 1);
+            this.fadeInAnimation(text, duration, icon);
         }
     }
 
-    typeWriterAnimation(text, speed) {
+    typeWriterAnimation(text, speed, icon) {
         let index = 0;
 
         // Create a placeholder with non-breaking spaces to stabilize the layout
@@ -58,13 +60,18 @@ class TextManager {
                 this.animationId = null; // Animation complete
                 this.typingSound.pause();
                 this.typingSound.currentTime = 0;
+
+                // Append the icon if provided
+                if (icon) {
+                    this.appendIcon(icon);
+                }
             }
         };
 
         addCharacter();
     }
 
-    fadeInAnimation(text, duration) {
+    fadeInAnimation(text, duration, icon) {
         this.element.textContent = text;
         this.element.style.opacity = 0;
         let startTime = null;
@@ -83,10 +90,39 @@ class TextManager {
                 this.animationId = requestAnimationFrame(step);
             } else {
                 this.animationId = null; // Animation complete
+
+                // Append the icon if provided
+                if (icon) {
+                    this.appendIcon(icon);
+                }
             }
         };
 
         this.animationId = requestAnimationFrame(step);
+    }
+
+    appendIcon(icon) {
+        // Create an element for the icon
+        const iconElement = document.createElement('img');
+        iconElement.src = icon; // Use the provided icon URL
+        iconElement.alt = 'Icon';
+
+        // Get the computed font size of the text element
+        const fontSize = window.getComputedStyle(this.element).fontSize;
+
+        // Apply the font size to the icon's width and height
+        iconElement.style.width = fontSize;
+        iconElement.style.height = fontSize;
+
+        iconElement.style.marginLeft = '8px'; // Add some space between text and icon
+        iconElement.style.verticalAlign = 'middle'; // Align the icon with the text
+
+        // Adjust the vertical position slightly
+        iconElement.style.position = 'relative';
+        iconElement.style.top = '-2px'; // Adjust this value to fine-tune the height
+
+        // Append the icon to the element
+        this.element.appendChild(iconElement);
     }
 }
 
