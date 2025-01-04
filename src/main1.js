@@ -20,17 +20,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize TextManager for title and description
     const titleManager = new TextManager(titleElement);
     const descriptionManager = new TextManager(descriptionElement);
+    const portfolioTitleManager = new TextManager(portfolioTitle);
+    scrollButton.textContent = strings[currentLanguage].scrollButton;
 
     async function updateTextContent(language) {
         titleManager.resetText();
         descriptionManager.resetText();
+        scrollButton.classList.remove('visible'); // Ensure the button is hidden
+        scrollButton.classList.add('hidden');
+
         titleManager.animateText(strings[language].welcomeTitle, 'typeWriter', { speed: 100 });
-        //short delay and call function to animate description
+
         setTimeout(() => {
             descriptionManager.animateText(strings[language].welcomeDescription, 'fadeIn', { duration: 1 });
-        }, 2800);
-        scrollButton.textContent = strings[language].scrollButton;
-        portfolioTitle.textContent = strings[language].portfolioTitle;
+
+            // Show the button after animations
+            setTimeout(() => {
+                scrollButton.classList.remove('hidden');
+                scrollButton.classList.add('visible');
+            }, 1000); // Match the description animation duration
+        }, 2800); // Delay to match title animation duration
     }
 
     updateTextContent(currentLanguage);
@@ -134,8 +143,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     scene1.background = new THREE.Color(0xffffff);
 
     const camera1 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera1.position.set(-0.9465677518731036, 3.3223679953203122, 3.0080446767202433);
-    camera1.rotation.set(-0.9567727847626417, 0.9581597811485589, 0.859592369623756);
+    camera1.position.set(-0.9465677518731036, 4.8223679953203122, 3.0080446767202433);
+    camera1.rotation.set(-0.9967727847626417, 0.9581597811485589, 0.859592369623756);
 
     const renderer1 = new THREE.WebGLRenderer({ antialias: true });
     renderer1.setSize(window.innerWidth, window.innerHeight);
@@ -151,11 +160,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const loader = new GLTFLoader();
     loader.load(
-        'assets/model.glb',
+        'assets/background.glb',
         (gltf) => {
             const model = gltf.scene;
-            model.position.set(-5, -1, -1);
-            model.scale.set(1, 1, 1);
+            model.position.set(-6.2, -1, -1);
+            model.scale.set(1.5, 1.5, 1.5);
             scene1.add(model);
         },
         undefined,
@@ -239,9 +248,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     animateScene2();
-
     scrollButton.addEventListener('click', () => {
-        controlManager.switchToPortfolio();
+        const waveOverlay = document.getElementById('wave-overlay');
+        const waveImage = waveOverlay.querySelector('img');
+        const bubbleSound = new Audio('assets/audio/bubble.mp3');
+        bubbleSound.volume = 0.5;
+        // Show the wave overlay and trigger the animation
+        waveOverlay.classList.remove('hidden');
+        waveOverlay.classList.add('active'); // This will trigger visibility and opacity
+        waveImage.classList.add('active'); // This triggers the animation for the image
+
+
+        setTimeout(() => {
+            controlManager.switchToPortfolio(); // Navigate to portfolio area
+            bubbleSound.play().catch((err) => console.log('Audio play error:', err));
+        }, 500); // Match the wave animation duration (1s)  
+        // Navigate to the portfolio area after the animation completes
+        setTimeout(() => {
+            waveOverlay.classList.remove('active');
+            waveOverlay.classList.add('hidden'); // Re-hide the wave overlay
+            waveImage.classList.remove('active'); // Reset image animation
+
+            console.log('Animation complete, switching to portfolio'); // Debugging log
+        }, 1500); // Match the animation duration (1.5s)
     });
 
     window.addEventListener('wheel', (event) => controlManager.handleScroll(event));

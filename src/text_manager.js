@@ -52,9 +52,8 @@ class TextManager {
 
                 index++;
 
-                // Random speed variance for natural effect
-                const nextSpeed = speed + Math.random() * 30 - 15;
-                setTimeout(addCharacter, Math.max(nextSpeed, 20)); // Minimum speed limit
+                // Use a constant speed for smooth animation
+                setTimeout(addCharacter, speed);
             } else {
                 this.animationId = null; // Animation complete
                 this.typingSound.pause();

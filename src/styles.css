@@ -23,13 +23,14 @@ body {
     /* Take up 25% of the space */
     background: rgba(255, 255, 255, 0.8);
     padding: 30px;
-    border-radius: 15px;
-    /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); */
+    /* border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); */
     max-width: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+
     /* Align text content to the left */
     margin-left: 50px;
     /* Add margin from the left edge */
@@ -43,6 +44,104 @@ body {
 
     /* border: 1px solid #000; */
 
+}
+
+/* Add this to your CSS */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        background-color: #f18203;
+        box-shadow: 0 0 5px rgba(241, 130, 3, 0.5);
+    }
+
+    50% {
+        transform: scale(1.1);
+        background-color: #d94436;
+        box-shadow: 0 0 15px rgba(217, 68, 54, 0.8);
+    }
+
+    100% {
+        transform: scale(1);
+        background-color: #f18203;
+        box-shadow: 0 0 5px rgba(241, 130, 3, 0.5);
+    }
+}
+
+/* Add this to your CSS */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        background-color: #f18203;
+        box-shadow: 0 0 5px rgba(241, 130, 3, 0.5);
+    }
+
+    50% {
+        transform: scale(1.1);
+        background-color: #f18203;
+        box-shadow: 0 0 5px rgba(241, 130, 3, 0.5);
+    }
+
+    100% {
+        transform: scale(1);
+        background-color: #f18203;
+        box-shadow: 0 0 5px rgba(241, 130, 3, 0.5);
+    }
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0);
+    /* Start at 0% size */
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.visible {
+    opacity: 1;
+    pointer-events: auto;
+    animation: scaleIn 0.5s ease-out;
+    /* Apply the scaleIn animation */
+}
+
+#scroll-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #f18203;
+    color: white;
+    border: none;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#scroll-button:hover {
+    background-color: #d94436;
+    color: white;
 }
 
 .text-container h1 {
@@ -200,4 +299,59 @@ body {
     font-size: 1rem;
     text-transform: capitalize;
     font-weight: bold;
+}
+
+/* Wave overlay container */
+#wave-overlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 9999;
+    background: transparent;
+    opacity: 0;
+    /* Start hidden */
+    visibility: hidden;
+    /* Prevent interaction when hidden */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Wave image inside the overlay */
+#wave-overlay img {
+    width: 100%;
+    object-fit: cover;
+    transform: translateY(100%);
+    /* Start out of view */
+    animation: none;
+    /* Initially no animation */
+}
+
+/* When the overlay is active */
+#wave-overlay.active {
+    opacity: 1;
+    /* Make the overlay visible */
+    visibility: visible;
+}
+
+/* When the wave image is active */
+#wave-overlay img.active {
+    animation: waveSlide 1.5s ease-in-out forwards;
+    /* Trigger wave animation */
+}
+
+/* Wave slide animation */
+@keyframes waveSlide {
+    0% {
+        transform: translateY(100%);
+        /* Start from the bottom */
+    }
+
+    100% {
+        transform: translateY(-100%);
+        /* Slide completely out of view to the top */
+    }
 }
