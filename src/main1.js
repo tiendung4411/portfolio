@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Control Manager
     class ControlManager {
         constructor() {
-            this.currentArea = 'room'; // Start in the first area
+            this.currentArea = 'room';
             this.scrollIndex = 0;
             this.scrollTarget = 0;
             this.scrollThreshold = 12;
@@ -76,14 +76,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         switchToPortfolio() {
             this.inTransition = true;
-            this.scrollIndex = 0; // Lock to the first item
-            this.scrollTarget = 0; // Reset scrolling
-            camera2.position.y = 0; // Align camera to the first item
+            this.scrollIndex = 0;
+            this.scrollTarget = 0;
+            camera2.position.y = 0;
             document.querySelector('.portfolio-area').scrollIntoView({ behavior: 'smooth' });
             setTimeout(() => {
                 this.currentArea = 'portfolio';
                 this.inTransition = false;
-            }, 600); // Allow smooth scroll transition
+            }, 600);
         }
 
         switchToRoom() {
@@ -92,13 +92,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             setTimeout(() => {
                 this.currentArea = 'room';
                 this.inTransition = false;
-            }, 600); // Allow smooth scroll transition
+            }, 600);
         }
 
         handleScroll(event) {
             event.preventDefault();
 
-            if (this.inTransition) return; // Ignore scroll during transitions
+            if (this.inTransition) return;
 
             if (this.currentArea === 'room' && event.deltaY > 0) {
                 this.switchToPortfolio();
@@ -198,13 +198,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         items.forEach((item, index) => {
             const targetY = -index * 12 + (controlManager.scrollTarget - camera2.position.y);
+
+            const isActive = controlManager.scrollIndex === index;
+
+            // Smooth positioning
             item.position.y += (targetY - item.position.y) * 0.1;
+
+            // Determine target rotation based on index (alternating directions)
+            const targetRotation = index % 2 === 0 ? -0.2 : 0.2; // Odd items rotate left, even items rotate right
+
+            // Subtle rotation for active items
+            if (isActive) {
+                if (Math.abs(item.rotation.y - targetRotation) > 0.005) {
+                    item.rotation.y += (targetRotation - item.rotation.y) * 0.1; // Smoothly approach target rotation
+                }
+            } else {
+                if (Math.abs(item.rotation.y) > 0.005) {
+                    item.rotation.y += (0 - item.rotation.y) * 0.1; // Reset rotation smoothly toward 0
+                }
+            }
+
+            // Scaling for active item
+            const targetScale = isActive ? 1.2 : 0.9;
+            item.scale.setScalar(item.scale.x + (targetScale - item.scale.x) * 0.1);
+
+            // Dimming inactive items
+            item.material.color.setScalar(isActive ? 1 : 0.6);
         });
 
         camera2.position.y += (controlManager.scrollTarget - camera2.position.y) * 0.1;
 
         renderer2.render(scene2, camera2);
     }
+
     animateScene2();
 
     scrollButton.addEventListener('click', () => {
