@@ -40,7 +40,10 @@ body {
 
 .h1-container {
 
-    width: 310px;
+    /* make it responsive width:   width: 310px; */
+    width: 100%;
+    max-width: 310px;
+
 
     /* border: 1px solid #000; */
 
@@ -432,4 +435,156 @@ body {
 .scroll-up-icon:hover span {
     color: rgba(0, 0, 0, 0.8);
     /* Darker arrow color on hover */
+}
+
+.about-me-container {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 4rem 2rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.about-me-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.about-me-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.about-me-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.profile-section {
+    text-align: center;
+}
+
+.profile-image img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.qr-code-section {
+    margin-top: 2rem;
+}
+
+.scan-text {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #666;
+}
+
+.qr-code {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+}
+
+.info-section h3 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 2rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+
+    /* Set fixed height for 3 lines */
+    height: calc(1.1rem * 1.6 * 3);
+    /* font-size * line-height * number of lines */
+    min-height: calc(1.1rem * 1.6 * 3);
+    overflow: hidden;
+
+    /* Optional: Add ellipsis if text overflows 3 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+
+    /* Ensure the container maintains its size during animation */
+    contain: size layout;
+}
+
+/* Add this if you want to ensure the container is always visible */
+.description:empty::before {
+    content: '\00a0\00a0\00a0';
+    /* Three non-breaking spaces */
+    display: inline-block;
+    height: 100%;
+    visibility: hidden;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.skill-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.skill-item img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 0.5rem;
+}
+
+.skill-item span {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.thank-you-section {
+    text-align: center;
+    margin-top: 4rem;
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-me-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .about-me-container {
+        padding: 2rem 1rem;
+    }
+
+    .skills-grid {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 1rem;
+    }
 }

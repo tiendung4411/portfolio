@@ -4,13 +4,27 @@
         "welcomeTitleIcon": "assets/icons/wave-hand.png",
         "welcomeDescription": "Discover amazing content and more!",
         "scrollButton": "Have a tour",
-        "portfolioTitle": "My Portfolio"
+        "portfolioTitle": "My Portfolio",
+        "aboutMe": "About Me",
+        "introduction": "Introduction",
+        "aboutMeDescription": "I am a last year student at the Van Lang University. Majoring in Multi Media Communication. I am passionate about design. I am always looking for new opportunities to learn and grow.",
+        "skills": "Skills",
+        "skillsDescription": "I have experience in Design banner, poster, logo, 3d model, video editing. I am also familiar with Adobe Photoshop, Adobe Illustrator, Adobe Premiere Pro, Canva, Capcut, Blender.",
+        "scanMe": "Scan me",
+        "thanks": "Thank you for visiting my Portfolio!"
     },
     "vn": {
         "welcomeTitle": "Xin chào, Tôi là Kim Toàn",
         "welcomeTitleIcon": "assets/icons/wave-hand.png",
         "welcomeDescription": "Khám phá nội dung thú vị và hơn thế nữa!",
         "scrollButton": "Khám phá ngay",
-        "portfolioTitle": "Danh mục của tôi"
+        "portfolioTitle": "Danh mục của tôi",
+        "aboutMe": "Về tôi",
+        "introduction": "Giới thiệu",
+        "aboutMeDescription": "Tôi là sinh viên năm cuối tại Đại học Văn Lang. Chuyên ngành Truyền thông đa phương tiện. Với niềm đam mê về thiết kế. Tôi luôn tìm kiếm cơ hội mới để học hỏi và phát triển.",
+        "skills": "Kỹ năng",
+        "skillsDescription": "Tôi có kinh nghiệm thiết kế banner, poster, logo, mô hình 3d, chỉnh sửa video sử dụng Adobe Photoshop, Adobe Illustrator, Adobe Premiere Pro, Canva, Capcut, Blender.",
+        "scanMe": "Quét để tìm hiểu thêm",
+        "thanks": "Cảm ơn bạn đã ghé thăm Portfolio của tôi!"
     }
 }

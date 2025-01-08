@@ -28,42 +28,139 @@ document.addEventListener('DOMContentLoaded', async () => {
     const portfolioTitle = document.querySelector('.portfolio-area h1');
     let isAnimating = false; // Flag to track animation state
 
+
     // Initialize TextManager for title and description
     const titleManager = new TextManager(titleElement);
     const descriptionManager = new TextManager(descriptionElement);
     const portfolioTitleManager = new TextManager(portfolioTitle);
     scrollButton.textContent = strings[currentLanguage].scrollButton;
 
+    // DOM elements for about section
+    const aboutMeTitle = document.querySelector('.section-title');
+    const aboutMeSubtitle = document.querySelector('.info-section h3');
+    const aboutMeDescription = document.querySelector('.about-text .description');
+    const skillsTitle = document.querySelector('.skills-section h3');
+    const skillsDescription = document.querySelector('.skills-section .description');
+    const scanMeText = document.querySelector('.scan-text');
+    const thanksText = document.querySelector('.thank-you-section p');
+
+    // Initialize TextManager instances
+    const textManagers = {
+        title: new TextManager(titleElement),
+        description: new TextManager(descriptionElement),
+        portfolioTitle: new TextManager(portfolioTitle),
+        aboutMeTitle: new TextManager(aboutMeTitle),
+        aboutMeDescription: new TextManager(aboutMeDescription),
+        skillsTitle: new TextManager(skillsTitle),
+        skillsDescription: new TextManager(skillsDescription),
+        aboutMeSubtitle: new TextManager(aboutMeSubtitle),
+        scanMeText: new TextManager(scanMeText),
+        thanksText: new TextManager(thanksText),
+
+    };
     async function updateTextContent(language) {
-        if (isAnimating) return; // Prevent multiple toggles during animation
+        if (isAnimating) return;
+        isAnimating = true;
 
-        isAnimating = true; // Block new animations until this completes
+        // Reset all text managers
+        Object.values(textManagers).forEach(manager => manager.resetText());
 
-        titleManager.resetText();
-        descriptionManager.resetText();
-
-        scrollButton.classList.remove('visible'); // Hide the button
+        // Hide button
+        scrollButton.classList.remove('visible');
         scrollButton.textContent = strings[language].scrollButton;
         scrollButton.classList.add('hidden');
 
-        // Start title animation
-        titleManager.animateText(strings[language].welcomeTitle, 'typeWriter', { speed: 100, icon: strings[language].welcomeTitleIcon });
+        // Main section animations
+        textManagers.title.animateText(
+            strings[language].welcomeTitle,
+            'typeWriter',
+            { speed: 100, icon: strings[language].welcomeTitleIcon }
+        );
+        textManagers.aboutMeTitle.animateText(
+            strings[language].aboutMe,
+            'fadeIn',
+            { duration: 1 }
+        );
+        textManagers.skillsTitle.animateText(
+            strings[language].skills,
+            'fadeIn',
+            { duration: 1 }
+        );
+        textManagers.aboutMeSubtitle.animateText(
+            strings[language].introduction,
+            'fadeIn',
+            { duration: 1 }
+        );
+        textManagers.scanMeText.animateText(
+            strings[language].scanMe,
+            'fadeIn',
+            { duration: 1 }
+        );
 
-        // Start description animation after title animation
+        textManagers.aboutMeDescription.animateText(
+            strings[language].aboutMeDescription,
+            'typeWriter',
+            { speed: 10 }
+        );
+
+
+        textManagers.skillsDescription.animateText(
+            strings[language].skillsDescription,
+            'typeWriter',
+            { speed: 10 }
+        );
+
+        // Sequence the animations
         setTimeout(() => {
-            descriptionManager.animateText(strings[language].welcomeDescription, 'fadeIn', { duration: 1 });
+            textManagers.description.animateText(
+                strings[language].welcomeDescription,
+                'fadeIn',
+                { duration: 1 }
+            );
 
-            // Show the button after description animation
+            // Update static content
+            portfolioTitle.textContent = strings[language].portfolioTitle;
+            // aboutMeTitle.textContent = strings[language].aboutMe;
+            // aboutMeSubtitle.textContent = strings[language].introduction;
+            // // skillsTitle.textContent = strings[language].skills;
+            // scanMeText.textContent = strings[language].scanMe;
+            // thanksText.textContent = strings[language].thanks;
+
+
+
+            // Animate about section content
             setTimeout(() => {
                 scrollButton.classList.remove('hidden');
                 scrollButton.classList.add('visible');
+                // Show button after all animations
+                setTimeout(() => {
 
-                isAnimating = false; // Animation is complete; allow toggling again
-            }, 1000); // Match the description animation duration
-        }, 2800); // Delay to match the title animation duration
+                    isAnimating = false;
+                    textManagers.thanksText.animateText(
+                        strings[language].thanks,
+                        'fadeIn',
+                        { duration: 3 }
+                    );
+                }, 6000);
+            }, 1000);
+        }, 2800);
     }
 
-    // updateTextContent(currentLanguage);
+    // Function to initialize all text content
+    function initializeTextContent(language) {
+        titleElement.textContent = strings[language].welcomeTitle;
+        descriptionElement.textContent = strings[language].welcomeDescription;
+        scrollButton.textContent = strings[language].scrollButton;
+        portfolioTitle.textContent = strings[language].portfolioTitle;
+        aboutMeTitle.textContent = strings[language].aboutMe;
+        aboutMeSubtitle.textContent = strings[language].introduction;
+        aboutMeDescription.textContent = strings[language].aboutMeDescription;
+        skillsTitle.textContent = strings[language].skills;
+        skillsDescription.textContent = strings[language].skillsDescription;
+        scanMeText.textContent = strings[language].scanMe;
+        thanksText.textContent = strings[language].thanks;
+    }
+
 
     const languageToggleButton = document.createElement('div');
     languageToggleButton.style.position = 'fixed';
@@ -111,14 +208,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             this.scrollTarget = 0;
             this.scrollThreshold = 12;
             this.inTransition = false;
+            this.scrollAccumulator = 0;
+            this.isScrolling = false;
+            this.scrollTimeout = null;
+            this.lastScrollTime = Date.now();
+            this.scrollCooldown = 500;
+            this.touchpadThreshold = 100;
         }
 
         switchToPortfolio() {
             this.inTransition = true;
             this.scrollIndex = 0;
             this.scrollTarget = 0;
+            this.scrollAccumulator = 0;
             camera2.position.y = 0;
-            document.querySelector('body').style.overflow = 'hidden'; // Disable body scrolling
+            document.querySelector('body').style.overflow = 'hidden';
             document.querySelector('.portfolio-area').scrollIntoView({ behavior: 'smooth' });
             setTimeout(() => {
                 this.currentArea = 'portfolio';
@@ -128,7 +232,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         switchToRoom() {
             this.inTransition = true;
-            document.querySelector('body').style.overflow = ''; // Re-enable body scrolling
+            this.scrollAccumulator = 0;
+            document.querySelector('body').style.overflow = '';
             document.querySelector('.background-container').scrollIntoView({ behavior: 'smooth' });
             setTimeout(() => {
                 this.currentArea = 'room';
@@ -136,31 +241,83 @@ document.addEventListener('DOMContentLoaded', async () => {
             }, 600);
         }
 
+        switchToAbout() {
+            this.inTransition = true;
+            this.scrollAccumulator = 0;
+            document.querySelector('body').style.overflow = '';
+            document.querySelector('.about-me-container').scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                this.currentArea = 'about';
+                this.inTransition = false;
+            }, 600);
+        }
+
         handleScroll(event) {
-            event.preventDefault(); // Completely block default scroll behavior
+            event.preventDefault();
 
-            if (this.inTransition) return;
+            if (this.inTransition || this.isScrolling) return;
 
-            // Normalize the scroll delta
-            const normalizedDeltaY = Math.sign(event.deltaY) * Math.min(Math.abs(event.deltaY), 20);
-            const scrollSensitivity = 0.1; // Reduce sensitivity for smoother scrolling
+            const currentTime = Date.now();
+            if (currentTime - this.lastScrollTime < this.scrollCooldown) {
+                return;
+            }
 
-            if (this.currentArea === 'room' && normalizedDeltaY > 0) {
+            const isTouchpad = Math.abs(event.deltaY) < 50;
+
+            if (isTouchpad) {
+                this.scrollAccumulator += event.deltaY;
+
+                if (this.scrollTimeout) {
+                    clearTimeout(this.scrollTimeout);
+                }
+
+                this.scrollTimeout = setTimeout(() => {
+                    if (Math.abs(this.scrollAccumulator) >= this.touchpadThreshold) {
+                        this.processScroll(Math.sign(this.scrollAccumulator));
+                    }
+                    this.scrollAccumulator = 0;
+                }, 50);
+            } else {
+                this.processScroll(Math.sign(event.deltaY));
+            }
+        }
+
+        processScroll(direction) {
+            if (this.currentArea === 'room' && direction > 0) {
                 this.switchToPortfolio();
             } else if (this.currentArea === 'portfolio') {
-                if (normalizedDeltaY > 1) {
+                if (direction > 0) {
                     if (this.scrollIndex < items.length - 1) {
+                        // Still have portfolio items to scroll through
+                        this.isScrolling = true;
                         this.scrollIndex++;
                         this.scrollTarget = -this.scrollIndex * this.scrollThreshold;
+                        this.lastScrollTime = Date.now();
+
+                        setTimeout(() => {
+                            this.isScrolling = false;
+                        }, this.scrollCooldown);
+                    } else if (this.scrollIndex === items.length - 1) {
+                        // At the last portfolio item, switch to about section
+                        this.switchToAbout();
                     }
-                } else if (normalizedDeltaY < -1) {
+                } else if (direction < 0) {
                     if (this.scrollIndex > 0) {
+                        this.isScrolling = true;
                         this.scrollIndex--;
                         this.scrollTarget = -this.scrollIndex * this.scrollThreshold;
+                        this.lastScrollTime = Date.now();
+
+                        setTimeout(() => {
+                            this.isScrolling = false;
+                        }, this.scrollCooldown);
                     } else {
                         this.switchToRoom();
                     }
                 }
+            } else if (this.currentArea === 'about' && direction < 0) {
+                // Allow scrolling back to portfolio from about section
+                this.switchToPortfolio();
             }
         }
     }
