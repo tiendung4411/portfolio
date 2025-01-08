@@ -172,12 +172,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderer1.setPixelRatio(window.devicePixelRatio);
     document.querySelector('.threejs-container').appendChild(renderer1.domElement);
 
-    const ambientLight1 = new THREE.AmbientLight(0xffffff, 2);
-    scene1.add(ambientLight1);
+    // const ambientLight1 = new THREE.AmbientLight(0xffffff, 2);
+    // scene1.add(ambientLight1);
 
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
-    hemisphereLight.position.set(0, 10, 0);
-    scene1.add(hemisphereLight);
+    // const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
+    // hemisphereLight.position.set(0, 10, 0);
+    // scene1.add(hemisphereLight);
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();

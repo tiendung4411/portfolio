@@ -141,17 +141,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (this.inTransition) return;
 
-            if (this.currentArea === 'room' && event.deltaY > 0) {
+            // Normalize the scroll delta
+            const normalizedDeltaY = Math.sign(event.deltaY) * Math.min(Math.abs(event.deltaY), 20);
+            const scrollSensitivity = 0.1; // Reduce sensitivity for smoother scrolling
+
+            if (this.currentArea === 'room' && normalizedDeltaY > 0) {
                 this.switchToPortfolio();
             } else if (this.currentArea === 'portfolio') {
-                const scrollSensitivity = 0.1; // Slow down scroll
-
-                if (event.deltaY * scrollSensitivity > 1) {
+                if (normalizedDeltaY > 1) {
                     if (this.scrollIndex < items.length - 1) {
                         this.scrollIndex++;
                         this.scrollTarget = -this.scrollIndex * this.scrollThreshold;
                     }
-                } else if (event.deltaY * scrollSensitivity < -1) {
+                } else if (normalizedDeltaY < -1) {
                     if (this.scrollIndex > 0) {
                         this.scrollIndex--;
                         this.scrollTarget = -this.scrollIndex * this.scrollThreshold;
@@ -168,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const scene1 = new THREE.Scene();
     scene1.background = new THREE.Color(0xffffff);
 
-    const camera1 = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera1 = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera1.position.set(-5.9465677518731036, 9.3223679953203122, 4.0080446767202433);
     camera1.rotation.set(-0.9967727847626417, 0.9581597811485589, 0.859592369623756);
 
@@ -192,22 +194,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderer1.shadowMap.enabled = true;
     renderer1.shadowMap.type = THREE.PCFSoftShadowMap; // Soft shadows
     const loader = new GLTFLoader();
+    let mixer = null;
+    let characterAnimation = null;
+    let animations = [];
+
     loader.load(
-        'assets/final.glb',
+        'assets/background_8_1.glb',
         (gltf) => {
             const model = gltf.scene;
             model.position.set(-6.2, -1, -1);
             model.scale.set(1.9, 1.9, 1.9);
 
-            // Traverse the model to configure shadows
+            // Traverse the model to configure shadows and set colorSpace
             model.traverse((child) => {
                 if (child.isMesh) {
+                    // Enable/disable shadows
                     if (child.name === 'Chair-15' || child.name === 'face_chair') {
                         child.castShadow = true; // Enable shadow casting for specific objects
                     } else {
                         child.castShadow = false; // Disable shadow casting for all other objects
                     }
                     child.receiveShadow = true; // Allow all objects to receive shadows
+
+                    // Set the colorSpace for materials
+                    if (child.material && child.material.map) {
+                        child.material.map.colorSpace = THREE.SRGBColorSpace; // Set sRGB color space
+                        child.material.map.needsUpdate = true; // Ensure the material updates
+                    }
                 }
             });
 
@@ -219,14 +232,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Create a light source near the Floor Lamp
                 floorLampLight = new THREE.PointLight(0xf18203, 25, 10);
                 floorLampLight.position.set(
-                    floorLamp.position.x - 4.55,
+                    floorLamp.position.x - 7.35,
                     floorLamp.position.y + 2,
-                    floorLamp.position.z
+                    floorLamp.position.z - 2.7
                 );
                 floorLampLight.castShadow = true;
                 floorLampLight.shadow.mapSize.width = 1024;
                 floorLampLight.shadow.mapSize.height = 1024;
-
+                console.log('Light position:', floorLampLight.position);
                 scene1.add(floorLampLight);
 
                 // Create a transparent sphere to represent the light source
@@ -251,18 +264,45 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Add the model to the scene
             scene1.add(model);
 
+            // Initialize AnimationMixer for animations
+
+            if (gltf.animations.length > 0) {
+                mixer = new THREE.AnimationMixer(model);
+                gltf.animations.forEach((clip) => {
+                    const action = mixer.clipAction(clip);
+                    // action.play();
+                    //store animation trigger into characterAnimation
+                    animations.push(action);
+                });
+                console.log('Animations triggered:', gltf.animations);
+            }
+
             // Hide the loading screen after a short delay
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 updateTextContent(currentLanguage);
+                animations.forEach((action, index) => {
+                    // Reset and play the animation
+                    action.reset();
+                    action.setLoop(THREE.LoopOnce); // Play only once
+                    action.clampWhenFinished = true; // Stay at last frame
+                    action.play();
+
+                    console.log(`Playing animation ${index}`);
+                });
             }, 500);
         },
         undefined,
         (error) => console.error('Error loading model:', error)
     );
+    // Animation update in render loop
+    const clock = new THREE.Clock();
+
+
 
     // Event listener for mouse clicks
     window.addEventListener('pointerdown', (event) => {
+        console.log('floorLampLight assigned:', floorLampLight);
         // Convert mouse position to normalized device coordinates
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -282,10 +322,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                 lightSwitchSound.play().catch((err) => console.log('Audio play error:', err));
                 // Toggle the light
                 if (floorLampLight) {
+                    console.log('Toggling light...');
                     isLightOn = !isLightOn; // Toggle the flag
                     floorLampLight.intensity = isLightOn ? 25 : 0; // Turn light on or off
                     console.log(`Light is now ${isLightOn ? 'ON' : 'OFF'}`);
+                } else {
+                    console.warn('FloorLampLight not found.');
                 }
+            };
+            if (clickedObject.name === 'Mesh002_1' ||
+                clickedObject.name === 'Mesh002_2' ||
+                clickedObject.name === 'Mesh002_3') {
+                console.log('Character clicked!');
+
+                // Play all animations or specific ones
+                animations.forEach((action, index) => {
+                    // Reset and play the animation
+                    action.reset();
+                    action.setLoop(THREE.LoopOnce); // Play only once
+                    action.clampWhenFinished = true; // Stay at last frame
+                    action.play();
+
+                    console.log(`Playing animation ${index}`);
+                });
             }
         }
     });
@@ -294,8 +353,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function animateScene1() {
         requestAnimationFrame(animateScene1);
+
+        const delta = clock.getDelta();
+        if (mixer) mixer.update(delta); // Update the mixer for animations
+
         renderer1.render(scene1, camera1);
     }
+
     animateScene1();
     //add a click event listener to the Floor_Lamp
 
