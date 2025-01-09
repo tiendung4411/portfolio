@@ -1,0 +1,30 @@
+{
+    "en": {
+        "welcomeTitle": "Hello, I'm Kim Toan",
+        "welcomeTitleIcon": "assets/icons/wave-hand.png",
+        "welcomeDescription": "Explore captivating content and unlock new possibilities!",
+        "scrollButton": "Take a tour",
+        "portfolioTitle": "My Portfolio",
+        "aboutMe": "About Me",
+        "introduction": "Who I Am",
+        "aboutMeDescription": "I am a final-year student at Van Lang University, specializing in Multimedia Communication. Driven by my passion for design, I am constantly seeking opportunities to learn, innovate, and grow in the creative industry.",
+        "skills": "My Expertise",
+        "skillsDescription": "With a strong foundation in design, I have hands-on experience creating banners, posters, logos, 3D models, and editing videos. Proficient in tools like Adobe Photoshop, Illustrator, Premiere Pro, Canva, Capcut, and Blender, I strive to bring creativity and precision to every project.",
+        "scanMe": "Scan the QR!",
+        "thanks": "Thank you for exploring my Portfolio! I look forward to collaborating with you in the future."
+    },
+    "vn": {
+        "welcomeTitle": "Xin chào, Tôi là Kim Toàn",
+        "welcomeTitleIcon": "assets/icons/wave-hand.png",
+        "welcomeDescription": "Hãy cùng khám phá những điều tuyệt vời trong Portfolio của tôi!",
+        "scrollButton": "Bắt đầu khám phá",
+        "portfolioTitle": "Portfolio của tôi",
+        "aboutMe": "Giới thiệu bản thân",
+        "introduction": "Đôi nét về tôi",
+        "aboutMeDescription": "Tôi hiện là sinh viên năm cuối tại Đại học Văn Lang, chuyên ngành Truyền thông Đa phương tiện. Với sự đam mê sáng tạo và thiết kế, tôi luôn tìm kiếm cơ hội để học hỏi và hoàn thiện bản thân trong lĩnh vực này.",
+        "skills": "Kỹ năng chuyên môn",
+        "skillsDescription": "Tôi có kinh nghiệm thiết kế sáng tạo trên các nền tảng như Adobe Photoshop, Adobe Illustrator, Adobe Premiere Pro, Canva, Capcut và Blender. Từ thiết kế banner, poster, logo đến mô hình 3D và chỉnh sửa video – mỗi dự án đều là cơ hội để tôi thể hiện sự sáng tạo của mình.",
+        "scanMe": "Quét mã QR",
+        "thanks": "Cảm ơn bạn đã ghé thăm Portfolio của tôi. Hy vọng chúng ta sẽ có cơ hội hợp tác trong tương lai!"
+    }
+}

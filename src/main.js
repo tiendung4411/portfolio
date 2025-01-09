@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log("DOM fully loaded and parsed");
 
-    const response = await fetch('src/strings.json');
+    const response = await fetch('strings.json');
     const strings = await response.json();
 
     let currentLanguage = 'en';
