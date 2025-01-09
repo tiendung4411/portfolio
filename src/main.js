@@ -567,21 +567,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const textureLoader = new THREE.TextureLoader();
     const itemData = [
-        { img: 'assets/items/project1.png', name: 'Project 1' },
-        { img: 'assets/items/project2.png', name: 'Project 2' },
-        { img: 'assets/items/project3.png', name: 'Project 3' },
-        { img: 'assets/items/project4.png', name: 'Project 4' },
-        { img: 'assets/items/project5.png', name: 'Project 5' },
-        { img: 'assets/items/project6.png', name: 'Project 6' },
-        { img: 'assets/items/project7.png', name: 'Project 7' },
-        { img: 'assets/items/project8.png', name: 'Project 8' },
-        { img: 'assets/items/project9.png', name: 'Project 9' },
-        { img: 'assets/items/project10.png', name: 'Project 10' },
-        { img: 'assets/items/project11.png', name: 'Project 11' },
-        { img: 'assets/items/project12.png', name: 'Project 12' },
-        { img: 'assets/items/project13.png', name: 'Project 13' },
-        { img: 'assets/items/project14.png', name: 'Project 14' },
-        { img: 'assets/items/project15.png', name: 'Project 15' },
+        { img: '/assets/items/project1.png', name: 'Project 1' },
+        { img: '/assets/items/project2.png', name: 'Project 2' },
+        { img: '/assets/items/project3.png', name: 'Project 3' },
+        { img: '/assets/items/project4.png', name: 'Project 4' },
+        { img: '/assets/items/project5.png', name: 'Project 5' },
+        { img: '/assets/items/project6.png', name: 'Project 6' },
+        { img: '/assets/items/project7.png', name: 'Project 7' },
+        { img: '/assets/items/project8.png', name: 'Project 8' },
+        { img: '/assets/items/project9.png', name: 'Project 9' },
+        { img: '/assets/items/project10.png', name: 'Project 10' },
+        { img: '/assets/items/project11.png', name: 'Project 11' },
+        { img: '/assets/items/project12.png', name: 'Project 12' },
+        { img: '/assets/items/project13.png', name: 'Project 13' },
+        { img: '/assets/items/project14.png', name: 'Project 14' },
+        { img: '/assets/items/project15.png', name: 'Project 15' },
+
 
     ];
 
