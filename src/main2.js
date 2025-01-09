@@ -11,7 +11,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         autoplay: true,
         path: './assets/loading.json', // Path to your Lottie file
     });
+    function checkDeviceType() {
+        const mobileWarning = document.getElementById('mobile-warning');
+        const mainContent = document.querySelector('.threejs-container');
+
+        // Check if device is mobile using screen width and user agent
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+            || window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Show warning and hide main content
+            mobileWarning.style.display = 'flex';
+            if (mainContent) {
+                mainContent.style.display = 'none';
+            }
+            // Prevent scrolling on mobile
+            document.body.style.overflow = 'hidden';
+        } else {
+            // Hide warning and show main content
+            mobileWarning.style.display = 'none';
+            if (mainContent) {
+                mainContent.style.display = 'block';
+            }
+            // Allow scrolling on desktop
+            document.body.style.overflow = '';
+        }
+    }
     const loadingScreen = document.getElementById('loading-screen');
+    checkDeviceType();
     loadingScreen.style.display = 'flex'; // Make sure it's visible
 
     console.log("DOM fully loaded and parsed");
@@ -91,23 +118,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             'fadeIn',
             { duration: 1 }
         );
-        textManagers.scanMeText.animateText(
-            strings[language].scanMe,
-            'fadeIn',
-            { duration: 1 }
-        );
+
 
         textManagers.aboutMeDescription.animateText(
             strings[language].aboutMeDescription,
             'typeWriter',
-            { speed: 10 }
+            { speed: 5 }
         );
 
 
         textManagers.skillsDescription.animateText(
             strings[language].skillsDescription,
             'typeWriter',
-            { speed: 10 }
+            { speed: 5 }
         );
 
         // Sequence the animations
@@ -141,7 +164,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                         'fadeIn',
                         { duration: 3 }
                     );
-                }, 6000);
+                    textManagers.scanMeText.animateText(
+                        strings[language].scanMe,
+                        'fadeIn',
+                        { duration: 1 }
+                    );
+                }, 10000);
             }, 1000);
         }, 2800);
     }
@@ -250,6 +278,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 this.currentArea = 'about';
                 this.inTransition = false;
             }, 600);
+            updateTextContent(currentLanguage);
         }
 
         handleScroll(event) {
@@ -658,7 +687,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         camera1.aspect = window.innerWidth / window.innerHeight;
         camera1.updateProjectionMatrix();
         renderer1.setSize(window.innerWidth, window.innerHeight);
-
+        checkDeviceType();
         camera2.aspect = window.innerWidth / window.innerHeight;
         camera2.updateProjectionMatrix();
         renderer2.setSize(window.innerWidth, window.innerHeight);
